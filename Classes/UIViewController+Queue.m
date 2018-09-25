@@ -13,9 +13,9 @@
 #import <MJControllerManager/MJControllerManager.h>
 #endif
 
-static dispatch_queue_t queue;  // 串行队列
-static dispatch_semaphore_t semaphore;  // 信号量
-static NSMutableArray<NSString *> *arrHash;// 记录弹出控制器的hash值
+static dispatch_queue_t queue;              /// 队列
+static dispatch_semaphore_t semaphore;      /// 信号量
+static NSMutableArray<NSString *> *arrHash; /// 记录弹出控制器的hash值
 
 @implementation UIViewController (Queue)
 #pragma mark - Life Circle
