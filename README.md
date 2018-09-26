@@ -1,5 +1,8 @@
 # MJViewControllerQueue
 
-支持pod导入  
-pod 'MJViewControllerQueue'
+预览  
+![预览][gif]
+
+--------------------------------
+[gif]:/Assets/IMB_ibOIXF.GIF
 
