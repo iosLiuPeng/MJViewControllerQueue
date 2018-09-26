@@ -13,9 +13,9 @@
 #import <MJControllerManager/MJControllerManager.h>
 #endif
 
-static dispatch_queue_t queue;              /// 队列
-static dispatch_semaphore_t semaphore;      /// 信号量
-static NSMutableArray<NSString *> *arrHash; /// 记录弹出控制器的hash值
+static dispatch_queue_t queue;  // 队列
+static dispatch_semaphore_t semaphore;  // 信号量
+static NSMutableArray<NSString *> *arrHash;// 记录弹出控制器的hash值
 
 @implementation UIViewController (Queue)
 #pragma mark - Life Circle
@@ -31,11 +31,18 @@ static NSMutableArray<NSString *> *arrHash; /// 记录弹出控制器的hash值
     Method methodc = class_getInstanceMethod([UIViewController class], @selector(dismissModalViewControllerAnimated:));
     Method methodd = class_getInstanceMethod([self class], @selector(mydismissModalViewControllerAnimated:));
     method_exchangeImplementations(methodc, methodd);
+    
+    queue = dispatch_queue_create("custom.UIViewController+Queue", DISPATCH_QUEUE_SERIAL);
+    dispatch_suspend(queue);
+
+    semaphore = dispatch_semaphore_create(0);
+    
+    arrHash = [[NSMutableArray alloc] init];
 }
 
 #pragma Public
-/// 添加控制器（按数组顺序弹出）
-+ (void)addViewControlersForName:(NSArray<NSString *> *)arrVC
+/// 添加一组控制器（按数组顺序弹出）
++ (void)addViewControlerArrayForName:(NSArray<NSString *> *)arrVC
 {
     NSMutableArray *muarrVC = [NSMutableArray arrayWithCapacity:arrVC.count];
     for (NSString *vcName in arrVC) {
@@ -47,54 +54,86 @@ static NSMutableArray<NSString *> *arrHash; /// 记录弹出控制器的hash值
         [muarrVC addObject:vc];
     }
     
-    [[self class] addViewControlers:muarrVC];
+    [[self class] addViewControlerArray:muarrVC];
 }
 
-/// 添加控制器（按数组顺序弹出）
-+ (void)addViewControlers:(NSArray<UIViewController *> *)arrVC
+/// 添加一组控制器（按数组顺序弹出）
++ (void)addViewControlerArray:(NSArray<UIViewController *> *)arrVC
 {
-    queue = dispatch_queue_create("custom.UIViewController+Queue", DISPATCH_QUEUE_SERIAL);
-    dispatch_suspend(queue);
-    
-    semaphore = dispatch_semaphore_create(0);
-    
-    arrHash = [[NSMutableArray alloc] init];
-    
-    dispatch_async(queue, ^{
-        for (UIViewController *vc in arrVC) {
-            [[self class] addViewController:vc];
-        }
-    });
+    for (UIViewController *vc in arrVC) {
+        [[self class] addViewController:vc];
+    }
 }
 
 /// 开始
-+ (void)start
++ (void)activeQueue
 {
     dispatch_resume(queue);
-    dispatch_semaphore_signal(semaphore);
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        dispatch_semaphore_signal(semaphore);
+    });
+}
+
+/// 移除队列中任务
++ (void)removeQueue
+{
+    queue = dispatch_queue_create("custom.UIViewController+Queue", DISPATCH_QUEUE_SERIAL);
+    dispatch_suspend(queue);
 }
 
 #pragma mark - Private
 /// 添加控制器
 + (void)addViewController:(UIViewController *)vc;
 {
-    if (vc == nil) {
-        return;
-    }
+    [[self class] addViewController:vc withPresentCompletion:nil];
+}
 
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSString *hash = [NSString stringWithFormat:@"%lu", (unsigned long)vc.hash];
-        [arrHash addObject:hash];
-        
+/**
+ 添加控制器
+ 
+ @param vcName 控制器名称
+ @param completion present后回调
+ */
++ (void)addViewControllerForName:(NSString *)vcName withPresentCompletion:(void (^ __nullable)(void))completion
+{
 #ifdef MODULE_CONTROLLER_MANAGER
-        UIViewController *topVC = [MJControllerManager topViewController];
+    UIViewController *vc = [MJControllerManager getViewControllerWithName:vcName];
 #else
-        UIViewController *topVC = [[self class] topViewController];
+    UIViewController *vc = [[self class] getViewControllerWithName:vcName];
 #endif
-        // 弹出
-        [topVC presentViewController:vc animated:YES completion:nil];
+    
+    [[self class] addViewController:vc withPresentCompletion:completion];
+}
+
+/**
+ 添加控制器
+
+ @param vc 控制器
+ @param completion present后回调
+ */
++ (void)addViewController:(UIViewController *)vc withPresentCompletion:(void (^ __nullable)(void))completion
+{
+    dispatch_async(queue, ^{
+        if (vc == nil) {
+            return;
+        }
+        
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSString *hash = [NSString stringWithFormat:@"%lu", (unsigned long)vc.hash];
+            [arrHash addObject:hash];
+            
+#ifdef MODULE_CONTROLLER_MANAGER
+            UIViewController *topVC = [MJControllerManager topViewController];
+#else
+            UIViewController *topVC = [[self class] topViewController];
+#endif
+            // 弹出
+            [topVC presentViewController:vc animated:YES completion:completion];
+        });
     });
 }
 
@@ -108,6 +147,7 @@ static NSMutableArray<NSString *> *arrHash; /// 记录弹出控制器的hash值
         NSString *hash = [NSString stringWithFormat:@"%lu", (unsigned long)self.hash];
         if ([arrHash containsObject:hash]) {
             dispatch_semaphore_signal(semaphore);
+            [arrHash removeObject:hash];
         }
     }];
 }
@@ -118,6 +158,7 @@ static NSMutableArray<NSString *> *arrHash; /// 记录弹出控制器的hash值
     NSString *hash = [NSString stringWithFormat:@"%lu", (unsigned long)self.hash];
     if ([arrHash containsObject:hash]) {
         dispatch_semaphore_signal(semaphore);
+        [arrHash removeObject:hash];
     }
 }
 
