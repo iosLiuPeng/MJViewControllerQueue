@@ -44,11 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (void)addViewController:(UIViewController *)vc withPresentCompletion:(void (^ __nullable)(void))completion;
 
-/// 开始
+/// 开始  (如果队列中有之前的任务，请先移除)
 + (void)activeQueue;
 
-/// 移除队列中任务
-/// (如果不想复用之前的任务，想重建新的任务，需要调用此方法将之前的任务移除)
+/// 移除队列中任务  (只有移除了之前的任务，才能新增任务)
 + (void)removeQueue;
 
 @end
