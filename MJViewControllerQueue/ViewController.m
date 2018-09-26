@@ -44,22 +44,15 @@
 }
 
 - (IBAction)present2:(id)sender {
-    [UIViewController addViewControlerArrayForName:@[@"ViewController1", @"ViewController2"]];
-    
-    
-    [UIViewController addViewControllerForName:@"ViewController3" withPresentCompletion:^{
+    UIViewController *vc1 = [[ViewController1 alloc] init];
+    UIViewController *vc2 = [[ViewController2 alloc] init];
+    UIViewController *vc3 = [[ViewController3 alloc] init];
+
+    [UIViewController addViewControlerArray:@[vc1, vc2]];
+
+    [UIViewController addViewController:vc3 withPresentCompletion:^{
         NSLog(@"已经弹出 ViewController3");
     }];
-    
-//    UIViewController *vc1 = [[ViewController1 alloc] init];
-//    UIViewController *vc2 = [[ViewController1 alloc] init];
-//    UIViewController *vc3 = [[ViewController1 alloc] init];
-//
-//    [UIViewController addViewControlerArray:@[vc1, vc2]];
-//
-//    [UIViewController addViewController:vc3 withPresentCompletion:^{
-//        NSLog(@"已经弹出 ViewController3");
-//    }];
     
     [UIViewController activeQueue];
 }
