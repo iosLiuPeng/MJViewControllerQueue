@@ -15,7 +15,7 @@
 
 static dispatch_queue_t queue;  // 队列
 static dispatch_semaphore_t semaphore;  // 信号量
-static NSMutableArray<NSString *> *arrHash;// 记录弹出控制器的hash值
+static NSMutableArray<NSString *> *arrRecord;// 控制器的弹出记录
 
 @implementation UIViewController (Queue)
 #pragma mark - Life Circle
@@ -27,17 +27,12 @@ static NSMutableArray<NSString *> *arrHash;// 记录弹出控制器的hash值
     Method methodb = class_getInstanceMethod([self class], @selector(mydismissViewControllerAnimated:completion:));
     method_exchangeImplementations(methoda, methodb);
     
-    // 交换 dismissModalViewControllerAnimated: 方法
-    Method methodc = class_getInstanceMethod([UIViewController class], @selector(dismissModalViewControllerAnimated:));
-    Method methodd = class_getInstanceMethod([self class], @selector(mydismissModalViewControllerAnimated:));
-    method_exchangeImplementations(methodc, methodd);
-    
     queue = dispatch_queue_create("custom.UIViewController+Queue", DISPATCH_QUEUE_SERIAL);
     dispatch_suspend(queue);
-
+    
     semaphore = dispatch_semaphore_create(0);
     
-    arrHash = [[NSMutableArray alloc] init];
+    arrRecord = [[NSMutableArray alloc] init];
 }
 
 #pragma Public
@@ -109,7 +104,7 @@ static NSMutableArray<NSString *> *arrHash;// 记录弹出控制器的hash值
 
 /**
  添加控制器
-
+ 
  @param vc 控制器
  @param completion present后回调
  */
@@ -123,14 +118,14 @@ static NSMutableArray<NSString *> *arrHash;// 记录弹出控制器的hash值
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSString *hash = [NSString stringWithFormat:@"%lu", (unsigned long)vc.hash];
-            [arrHash addObject:hash];
-            
 #ifdef MODULE_CONTROLLER_MANAGER
             UIViewController *topVC = [MJControllerManager topViewController];
 #else
             UIViewController *topVC = [[self class] topViewController];
 #endif
+            UIViewController *containerVC = topVC.parentViewController? topVC.parentViewController: topVC;
+            NSString *record = [NSString stringWithFormat:@"%p -> %p", containerVC, vc];
+            [arrRecord addObject:record];
             // 弹出
             [topVC presentViewController:vc animated:YES completion:completion];
         });
@@ -138,31 +133,29 @@ static NSMutableArray<NSString *> *arrHash;// 记录弹出控制器的hash值
 }
 
 #pragma mark - Runtime
-- (void)mydismissViewControllerAnimated:(BOOL)flag completion: (void (^ __nullable)(void))completion {
+- (void)mydismissViewControllerAnimated:(BOOL)flag completion: (void (^ __nullable)(void))completion
+{
+    NSString *record = nil;
+    if (self.presentedViewController) {
+        record = [NSString stringWithFormat:@"%p -> %p", self, self.presentedViewController];
+    } else {
+        record = [NSString stringWithFormat:@"%p -> %p", self.presentingViewController, self];
+    }
+    
     [self mydismissViewControllerAnimated:flag completion:^{
         if (completion) {
             completion();
         }
         
-        NSString *hash = [NSString stringWithFormat:@"%lu", (unsigned long)self.hash];
-        if ([arrHash containsObject:hash]) {
+        if ([arrRecord containsObject:record]) {
             dispatch_semaphore_signal(semaphore);
-            [arrHash removeObject:hash];
+            [arrRecord removeObject:record];
         }
     }];
 }
 
-- (void)mydismissModalViewControllerAnimated:(BOOL)animated {
-    [self mydismissModalViewControllerAnimated:animated];
-    
-    NSString *hash = [NSString stringWithFormat:@"%lu", (unsigned long)self.hash];
-    if ([arrHash containsObject:hash]) {
-        dispatch_semaphore_signal(semaphore);
-        [arrHash removeObject:hash];
-    }
-}
-
 #pragma mark - Other
+
 
 #ifndef MODULE_CONTROLLER_MANAGER
 + (UIViewController *)getViewControllerWithName:(NSString *)aVCName
