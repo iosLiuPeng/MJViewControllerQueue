@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -17,42 +16,50 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zR7-qw-ZWp">
-                                <rect key="frame" x="86" y="385" width="53" height="30"/>
-                                <state key="normal" title="Present"/>
-                                <connections>
-                                    <action selector="present:" destination="BYZ-38-t0r" eventType="touchUpInside" id="8J6-3B-VXY"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DJn-2x-1YW">
-                                <rect key="frame" x="160" y="252" width="55" height="30"/>
-                                <state key="normal" title="Remove"/>
-                                <connections>
-                                    <action selector="remove:" destination="BYZ-38-t0r" eventType="touchUpInside" id="yQ1-YD-s9C"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aWS-yD-aL3">
-                                <rect key="frame" x="231.5" y="385" width="62" height="30"/>
-                                <state key="normal" title="Present2"/>
-                                <connections>
-                                    <action selector="present2:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Trr-7s-7el"/>
-                                </connections>
-                            </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="Nn4-sT-kpS">
+                                <rect key="frame" x="116.5" y="318.5" width="142" height="30"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="csA-5d-zVE">
+                                        <rect key="frame" x="0.0" y="0.0" width="53" height="30"/>
+                                        <state key="normal" title="Present"/>
+                                        <connections>
+                                            <action selector="clickedPresent:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3Ck-tv-tC5"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hGy-xY-7sh">
+                                        <rect key="frame" x="103" y="0.0" width="39" height="30"/>
+                                        <state key="normal" title="Close"/>
+                                        <connections>
+                                            <action selector="clickedCLose:" destination="BYZ-38-t0r" eventType="touchUpInside" id="YNc-TY-rgC"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6gB-S7-3Ti">
+                                <rect key="frame" x="173.5" y="131" width="28.5" height="72"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="60"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="DJn-2x-1YW" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" multiplier="0.8" id="6Va-62-NgB"/>
-                            <constraint firstItem="DJn-2x-1YW" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="PTE-m7-8tf"/>
-                            <constraint firstItem="zR7-qw-ZWp" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" multiplier="0.6" id="T5w-pd-Gz9"/>
-                            <constraint firstItem="zR7-qw-ZWp" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" multiplier="1.2" id="ZEV-hI-rOE"/>
-                            <constraint firstItem="aWS-yD-aL3" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" multiplier="1.2" id="aBF-4j-5yQ"/>
-                            <constraint firstItem="aWS-yD-aL3" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" multiplier="1.4" id="wRy-tL-Ioc"/>
+                            <constraint firstItem="Nn4-sT-kpS" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="IgR-O0-nIi"/>
+                            <constraint firstItem="6gB-S7-3Ti" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="XgV-bq-GNX"/>
+                            <constraint firstItem="6gB-S7-3Ti" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" multiplier="0.5" id="hx2-im-tmD"/>
+                            <constraint firstItem="Nn4-sT-kpS" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="t3a-ng-ffG"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <connections>
+                        <outlet property="btnClose" destination="hGy-xY-7sh" id="wcf-9c-gZV"/>
+                        <outlet property="btnPresent" destination="csA-5d-zVE" id="nfA-gA-5Tm"/>
+                        <outlet property="lblIndex" destination="6gB-S7-3Ti" id="7cP-fp-gFO"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="140" y="133"/>
         </scene>
     </scenes>
 </document>
