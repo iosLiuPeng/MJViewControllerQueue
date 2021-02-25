@@ -38,13 +38,13 @@ static NSMutableArray<NSOperation *> *arrOperation;// 加入队列中的操作
     queue.suspended = YES;
 }
 
-/// 添加任务
+/// 添加任务，自动执行
 + (void)addOperation:(void (^)(void))block
 {
     [self addOperation:nil priority:NSOperationQueuePriorityNormal block:block];
 }
 
-/// 添加任务
+/// 添加任务，指定名称、优先级
 + (void)addOperation:(nullable NSString *)name priority:(NSOperationQueuePriority)priority block:(void (^)(void))block
 {
     NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{

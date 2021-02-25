@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 添加任务，自动执行
 + (void)addOperation:(void (^)(void))block;
+/// 添加任务，指定名称、优先级
++ (void)addOperation:(nullable NSString *)name priority:(NSOperationQueuePriority)priority block:(void (^)(void))block;
 
 /// 任务完成，继续下一个
 + (void)operationComplete;
